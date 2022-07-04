@@ -1,18 +1,47 @@
+import 'dart:async';
+
 import 'package:couple_jet/ui/reusable/main_button.dart';
+import 'package:couple_jet/ui/screens/bottom_nav_bar/bottom_nav_bar.dart';
 import 'package:couple_jet/ui/screens/login_screen/login_screen.dart';
 import 'package:couple_jet/ui/screens/sign_up_screen/sign_up_screen.dart';
 import 'package:couple_jet/utils/colors.dart';
 import 'package:couple_jet/utils/text_styles.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 
+import '../../../utils/constant.dart';
 import 'widgets/gradient_mask.dart';
 
-class OnboardScreen extends StatelessWidget {
+class OnboardScreen extends StatefulWidget {
   const OnboardScreen({Key? key}) : super(key: key);
 
+  @override
+  State<OnboardScreen> createState() => _OnboardScreenState();
+}
+
+class _OnboardScreenState extends State<OnboardScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    firebaseAuth.authStateChanges().listen((User? user) {
+      if (user == null) {
+        // Timer(Duration(seconds: 3),
+        //         ()=>Navigator.pushReplacement(context,
+        //         MaterialPageRoute(builder:
+        //             (context) =>
+        //             LoginScreen()
+        //         )
+        //     )
+        // );
+      } else {
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_)=>BottomNavBar()), (route) => false) ;
+      }
+    });
+  }
   @override
   Widget build(BuildContext context) {
     if(Theme.of(context).scaffoldBackgroundColor == kLightBg) {

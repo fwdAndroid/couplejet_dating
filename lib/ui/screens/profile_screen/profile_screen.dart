@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:couple_jet/ui/reusable/card_container.dart';
 import 'package:couple_jet/ui/reusable/gradient_points_container.dart';
 import 'package:couple_jet/ui/reusable/gradient_round_button.dart';
@@ -12,6 +13,8 @@ import 'package:couple_jet/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
+
+import '../../../utils/constant.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key);
@@ -75,60 +78,72 @@ class ProfileScreen extends StatelessWidget {
                       children: [
                         Align(
                           alignment:Alignment.center,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 150*widthScale,
-                                height: 150*widthScale,
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.bottomRight,
-                                    stops: [0.0, 1.0],
-                                    colors: [
-                                      kBlue,
-                                      kTeal,
+                          child: FutureBuilder(
+                              future: firebaseFirestore.collection("users").doc(firebaseAuth.currentUser!.uid).get(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                                if (snapshot.hasData) {
+                                  var ds=snapshot.data!;
+                                  return Column(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 150*widthScale,
+                                        height: 150*widthScale,
+                                        decoration: const BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.centerLeft,
+                                            end: Alignment.bottomRight,
+                                            stops: [0.0, 1.0],
+                                            colors: [
+                                              kBlue,
+                                              kTeal,
+                                            ],
+                                          ),
+                                          shape: BoxShape.circle,
+                                          boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(0, 4), blurRadius: 12.0)],
+                                        ),
+                                        child: Container(
+                                          margin: EdgeInsets.all(12*widthScale),
+                                          decoration:  BoxDecoration(
+                                              color: Colors.white,
+                                              shape: BoxShape.circle,
+                                              image: DecorationImage(image: NetworkImage(ds.get("imageLink")),fit: BoxFit.fill)
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 7*heightScale,),
+                                      Text(ds.get("UserName"),style: GoogleFonts.outfit(fontWeight: FontWeight.bold,fontSize: 25*widthScale),),
+                                      Text('aus Düsseldorf, DE',style: GoogleFonts.outfit(fontSize: 12*widthScale),),
+                                      SizedBox(height: 13*heightScale,),
+                                      Wrap(
+                                        crossAxisAlignment: WrapCrossAlignment.center,
+                                        direction: Axis.horizontal,
+                                        runSpacing: 8.0 * heightScale,
+                                        spacing: 8 * widthScale,
+                                        alignment: WrapAlignment.start,
+                                        children: interests
+                                            .map((e) => GestureDetector(
+                                          onTap: () {
+                                            print('called');
+                                          },
+                                          child: InterestItem(
+                                              radius: 20,
+                                              title: e.title,
+                                              icon: e.icon,
+                                              isSelected: e.isSelected),
+                                        ))
+                                            .toList(),
+                                      ),
+                                      SizedBox(height: 14*heightScale,),
                                     ],
-                                  ),
-                                  shape: BoxShape.circle,
-                                  boxShadow: [BoxShadow(color: Colors.black12, offset: Offset(0, 4), blurRadius: 12.0)],
-                                ),
-                                child: Container(
-                                  margin: EdgeInsets.all(12*widthScale),
-                                  decoration: const BoxDecoration(
-                                      color: Colors.white,
-                                      shape: BoxShape.circle,
-                                    image: DecorationImage(image: AssetImage('images/dummy_profile3.png'),fit: BoxFit.fill)
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 7*heightScale,),
-                              Text('Mark, 25',style: GoogleFonts.outfit(fontWeight: FontWeight.bold,fontSize: 25*widthScale),),
-                              Text('aus Düsseldorf, DE',style: GoogleFonts.outfit(fontSize: 12*widthScale),),
-                              SizedBox(height: 13*heightScale,),
-                              Wrap(
-                                crossAxisAlignment: WrapCrossAlignment.center,
-                                direction: Axis.horizontal,
-                                runSpacing: 8.0 * heightScale,
-                                spacing: 8 * widthScale,
-                                alignment: WrapAlignment.start,
-                                children: interests
-                                    .map((e) => GestureDetector(
-                                  onTap: () {
-                                    print('called');
-                                  },
-                                  child: InterestItem(
-                                    radius: 20,
-                                      title: e.title,
-                                      icon: e.icon,
-                                      isSelected: e.isSelected),
-                                ))
-                                    .toList(),
-                              ),
-                              SizedBox(height: 14*heightScale,),
-                            ],
-                          ),
+                                  );
+                                } else if (snapshot.hasError) {
+                                  return Center(child: Icon(Icons.error_outline));
+                                } else {
+                                  return Center(child: CircularProgressIndicator());
+                                }
+                              }),
                         ),
                         Align(
                           alignment: Alignment.topLeft,
@@ -180,7 +195,7 @@ class ProfileScreen extends StatelessWidget {
                                 children: [
                                   ProfileImage(
                                     radius: 17.5,
-                                    profileImg: 'images/dummy_profile_img1.png',
+                                    profileImg: firebaseAuth.currentUser!.photoURL.toString(),
                                     onPress: () {},
                                   ),
                                   SizedBox(

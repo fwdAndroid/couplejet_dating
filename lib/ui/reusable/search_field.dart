@@ -7,8 +7,8 @@ class SearchField extends StatelessWidget {
 
   final String hint;
   final TextEditingController textController;
-
-  const SearchField({Key? key, required this.hint, required this.textController}) : super(key: key);
+  void Function(String)? onChanged;
+   SearchField({Key? key,this.onChanged,required this.hint, required this.textController}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class SearchField extends StatelessWidget {
             border: InputBorder.none,
             hintText: hint,
             hintStyle: GoogleFonts.outfit(fontSize: 15 * widthScale),
-            suffixIcon: Row(
+              suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.search_rounded,color: Colors.grey,),
@@ -39,6 +39,7 @@ class SearchField extends StatelessWidget {
               ],
             )
           ),
+          onChanged: onChanged,
         ),
       ),
     );

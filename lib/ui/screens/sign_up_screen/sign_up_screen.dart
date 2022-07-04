@@ -17,6 +17,8 @@ class SignUpScreen extends StatelessWidget {
   final TextEditingController pwdController = TextEditingController();
   final TextEditingController rePwdController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
+    final TextEditingController userController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +44,12 @@ class SignUpScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       const TitleText(title: "Welcome back!"),
+                       SizedBox(height: 15*heightScale,),
+                      CustomTextField(
+                          hint: "UserName",
+                          textController: userController,
+                          prefixIcon: Icons.person
+                      ),
                       SizedBox(height: 15*heightScale,),
                       CustomTextField(
                           hint: "E-Mail Address",
